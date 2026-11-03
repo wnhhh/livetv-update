@@ -1,0 +1,38 @@
+*.iml
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+/.idea/deploymentTargetDropDown.xml
+/.idea/git_toolbox_prj.xml
+/.idea/deploymentTargetSelector.xml
+/.idea/GrepConsole.xml
+/.idea/material_theme_project_new.xml
+/.idea/other.xml
+/.idea/git_toolbox_blame.xml
+/.idea/emulatorDisplays.xml
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+key.properties
+keystore.jks
+.kotlin
+/release
+
+# 构建产物与发布包（含 17MB 级 APK，不进源码仓库）
+/dist/
+/update/
+*.apk
+
+# 例外：仓库根目录的发布包需要跟源码放在一起，供在线更新下载
+!/livetv-*.apk
+
+# 本地工作区数据（会话记忆、工具缓存，含服务器信息）
+/.workbuddy/

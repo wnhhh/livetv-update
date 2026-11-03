@@ -1,0 +1,9 @@
+{
+  "tag_name": "v3.3.20",
+  "assets": [
+    {
+      "browser_download_url": "https://raw.githubusercontent.com/wnhhh/livetv-update/main/livetv-3.3.20.apk"
+    }
+  ],
+  "body": "3.3.20 更新内容\n1. 「全部频道」左列顶部新增「收藏」分组，进入即可看到已收藏的频道（有收藏时才出现）\n2. 去掉侧边栏右侧的渐变过渡，两列保持纯色，右侧直接接画面\n3. 侧边栏总宽度从 366dp 收窄到 330dp（分组 130 + 频道 200），画面遮挡进一步减少\n\n使用：按 OK 打开频道列表 → 左列最上方「收藏」；在频道上长按 OK 可收藏或取消收藏。"
+}

@@ -1,0 +1,9 @@
+{
+  "tag_name": "v3.3.20",
+  "assets": [
+    {
+      "browser_download_url": "https://raw.githubusercontent.com/wnhhh/livetv-update/main/livetv-3.3.20.apk"
+    }
+  ],
+  "body": "测试版当前与稳定版相同（v3.3.20）。\n发布真正的预发布版本时，把 tag_name 写成带后缀的形式，例如 v3.3.21-beta，\n并把 browser_download_url 换成对应的 apk，测试版就会比稳定版提前收到更新。"
+}

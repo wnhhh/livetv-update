@@ -1,0 +1,160 @@
+import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
+
+plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.compose)
+    alias(libs.plugins.kotlin.serialization)
+}
+
+android {
+    @Suppress("UNCHECKED_CAST")
+    apply(extra["appConfig"] as BaseAppModuleExtension.() -> Unit)
+
+    namespace = "top.yogiczy.mytv.tv"
+    compileSdk = libs.versions.compileSdk.get().toInt()
+
+    defaultConfig {
+        applicationId = "com.livetv.player"
+        minSdk = libs.versions.minSdk.get().toInt()
+        targetSdk = libs.versions.targetSdk.get().toInt()
+        versionCode = 13
+        versionName = "3.3.20"
+        vectorDrawables {
+            useSupportLibrary = true
+        }
+
+        // 只保留电视盒子实际使用的架构，x86/x86_64/armeabi 会白白多出 30MB+
+        ndk {
+            abiFilters.addAll(listOf("arm64-v8a", "armeabi-v7a"))
+        }
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
+            signingConfig = if (signingConfigs.getByName("release").storeFile != null) {
+                signingConfigs.getByName("release")
+            } else {
+                // 未配置自有签名文件时回退到 debug 签名，保证 release 包能打出来
+                signingConfigs.getByName("debug")
+            }
+        }
+    }
+
+    sourceSets {
+        getByName("main") {
+            jniLibs.srcDirs("jniLibs")
+        }
+    }
+
+    compileOptions {
+        isCoreLibraryDesugaringEnabled = true
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+
+    buildFeatures {
+        compose = true
+        buildConfig = true
+    }
+
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+
+    flavorDimensions += listOf("version")
+    productFlavors {
+        create("original") {
+            dimension = "version"
+        }
+
+        create("disguised") {
+            dimension = "version"
+            applicationId = "com.chinablue.tv"
+        }
+    }
+
+    // splits {
+    //     abi {
+    //         isEnable = true
+    //         isUniversalApk = false
+    //         reset()
+    //         // noinspection ChromeOsAbiSupport
+    //         include("arm64-v8a")
+    //     }
+    // }
+}
+
+dependencies {
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.compose.foundation.base)
+    implementation(libs.androidx.tv.material)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.navigation.compose)
+
+    implementation(libs.kotlinx.serialization)
+    implementation(libs.kotlinx.collections.immutable)
+    implementation(libs.androidx.material.icons.extended)
+
+    // 播放器
+    val mediaSettingsFile = file("../../media/core_settings.gradle")
+    if (mediaSettingsFile.exists()) {
+        implementation(project(":media3:lib-exoplayer"))
+        implementation(project(":media3:lib-exoplayer-hls"))
+        implementation(project(":media3:lib-exoplayer-rtsp"))
+        implementation(project(":media3:lib-exoplayer-dash"))
+        implementation(project(":media3:lib-ui"))
+    } else {
+        implementation(libs.androidx.media3.exoplayer)
+        implementation(libs.androidx.media3.exoplayer.hls)
+        implementation(libs.androidx.media3.exoplayer.rtsp)
+        implementation(libs.androidx.media3.exoplayer.dash)
+        implementation(libs.androidx.media3.ui)
+    }
+
+    implementation("com.github.CarGuo.GSYVideoPlayer:gsyvideoplayer-java:v10.0.0")
+    implementation("com.github.CarGuo.GSYVideoPlayer:gsyvideoplayer-ex_so:v10.0.0")
+
+    // 二维码
+    implementation(libs.qrose)
+
+    implementation(libs.coil.compose)
+    implementation(libs.coil.svg)
+
+    implementation(libs.okhttp)
+    implementation(libs.androidasync)
+
+    implementation(libs.tinypinyin)
+
+    implementation(project(":core:data"))
+    implementation(project(":core:designsystem"))
+    implementation(project(":core:util"))
+    implementation(project(":allinone"))
+    // implementation(project(":tbsx5"))
+
+    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar", "*.jar"))))
+
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+}
+
