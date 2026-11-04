@@ -59,7 +59,9 @@ class UpdateViewModel(
             if (force) _isUpdateAvailable = false
 
             val releaseUrl = Constants.GIT_RELEASE_LATEST_URL[channel] ?: return
-            _latestRelease = GitRepository().latestRelease(releaseUrl)
+            _latestRelease = GitRepository().latestReleaseWithFallback(
+                Constants.buildProxyUrls(releaseUrl)
+            )
             _isUpdateAvailable = _latestRelease.version.compareVersion(currentVersion) > 0
 
             log.i("当前版本: $currentVersion，最新版本: ${_latestRelease.version}，是否可更新: $_isUpdateAvailable")
@@ -89,7 +91,10 @@ class UpdateViewModel(
             _isUpdating = true
             _updateDownloaded = false
 
-            Downloader.downloadTo(_latestRelease.downloadUrl, latestFile.path) {
+            Downloader.downloadToAny(
+                urls = Constants.buildProxyUrls(_latestRelease.downloadUrl),
+                filePath = latestFile.path,
+            ) {
                 Snackbar.show(
                     "正在下载更新: $it%",
                     leadingLoading = true,

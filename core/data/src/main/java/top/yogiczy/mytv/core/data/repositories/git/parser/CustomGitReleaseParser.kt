@@ -4,7 +4,6 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import top.yogiczy.mytv.core.data.entities.git.GitRelease
-import top.yogiczy.mytv.core.data.utils.Constants
 import top.yogiczy.mytv.core.data.utils.Globals
 
 /**
@@ -20,7 +19,8 @@ class CustomGitReleaseParser : GitReleaseParser {
 
         return GitRelease(
             version = json.getValue("tag_name").jsonPrimitive.content.substring(1),
-            downloadUrl = Constants.GITHUB_PROXY + json.getValue("assets").jsonArray[0].jsonObject["browser_download_url"]!!.jsonPrimitive.content,
+            // 保留原始地址：下载时由 Constants.buildProxyUrls 生成多代理候选
+            downloadUrl = json.getValue("assets").jsonArray[0].jsonObject["browser_download_url"]!!.jsonPrimitive.content,
             description = json.getValue("body").jsonPrimitive.content,
         )
     }

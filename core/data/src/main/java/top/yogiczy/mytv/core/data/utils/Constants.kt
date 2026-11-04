@@ -74,12 +74,31 @@ object Constants {
     const val CHANNEL_LOGO_PROVIDER = "https://live.fanmingming.com/tv/{name|uppercase}.png"
 
     /**
-     * GitHub加速代理地址
+     * GitHub 加速代理列表，按顺序尝试
      *
-     * ghp.ci 已停止服务（连接直接失败），换成仍在工作的 gh-proxy.com。
-     * 更新清单和安装包下载都会拼这个前缀，失效会导致在线更新整体不可用。
+     * 单个代理限流、换域名或挂掉时，自动换下一个，最后再试直连。
+     * 只保留实测可用的（2026-11 实测 gh-proxy/ghfast 返回 200 且支持 releases 附件；
+     * ghproxy.net、ghproxy.cc、gh.llkk.cc、github.moeyy.xyz 均已超时，不要再加回来）。
+     */
+    val GITHUB_PROXIES = listOf(
+        "https://gh-proxy.com/",
+        "https://ghfast.top/",
+    )
+
+    /**
+     * 主代理地址（保留给需要单地址的场景）
      */
     const val GITHUB_PROXY = "https://gh-proxy.com/"
+
+    /**
+     * 给原始地址生成一组候选 URL：依次套用各代理，最后附加直连地址兜底
+     */
+    fun buildProxyUrls(url: String): List<String> {
+        if (url.isBlank()) return emptyList()
+        if (GITHUB_PROXIES.any { url.startsWith(it) }) return listOf(url)
+
+        return GITHUB_PROXIES.map { it + url } + url
+    }
 
     /**
      * 更新清单所在仓库的 raw 目录
@@ -92,11 +111,13 @@ object Constants {
 
     /**
      * 各更新渠道对应的清单文件
+     *
+     * 存的是不带代理的原始地址，请求时由 [buildProxyUrls] 逐个代理尝试。
      */
     val GIT_RELEASE_LATEST_URL = mapOf(
-        "stable" to "${GITHUB_PROXY}${UPDATE_REPO_RAW}/tv-stable.json",
-        "beta" to "${GITHUB_PROXY}${UPDATE_REPO_RAW}/tv-beta.json",
-        "dev" to "${GITHUB_PROXY}${UPDATE_REPO_RAW}/tv-dev.json",
+        "stable" to "${UPDATE_REPO_RAW}/tv-stable.json",
+        "beta" to "${UPDATE_REPO_RAW}/tv-beta.json",
+        "dev" to "${UPDATE_REPO_RAW}/tv-dev.json",
     )
 
     /**
