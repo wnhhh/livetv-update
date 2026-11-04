@@ -68,6 +68,23 @@ fun SettingsControlScreen(
                 },
             )
         }
+
+        item {
+            val onlyFavorite = settingsViewModel.iptvChannelFavoriteListVisible
+
+            SettingsListItem(
+                headlineContent = "上下键只在收藏内切换",
+                supportingContent = if (onlyFavorite)
+                    "当前频道已收藏时，上下键按收藏顺序切；取消收藏后会回到全量频道"
+                else "上下键始终按全量频道顺序切换",
+                trailingContent = {
+                    Switch(onlyFavorite, null)
+                },
+                onSelect = {
+                    settingsViewModel.iptvChannelFavoriteListVisible = !onlyFavorite
+                },
+            )
+        }
     }
 }
 

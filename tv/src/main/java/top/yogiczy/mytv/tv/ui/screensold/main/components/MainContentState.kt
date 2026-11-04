@@ -181,20 +181,33 @@ class MainContentState(
         }
     }
 
+    /**
+     * 把收藏里的频道快照换成当前直播源里的最新对象
+     *
+     * 收藏时保存的是当时的 Channel，源刷新后线路、台号都可能变化，
+     * 直接播放旧对象会出现线路对不上、台号显示错误。
+     */
+    private fun resolveChannel(channel: Channel?): Channel? =
+        channel?.let { snapshot ->
+            channelGroupListProvider().channelList.firstOrNull { it.name == snapshot.name }
+                ?: snapshot
+        }
+
     private fun getPrevFavoriteChannel(): Channel? {
         if (!settingsViewModel.iptvChannelFavoriteListVisible) return null
 
         val channelGroupList = channelGroupListProvider()
         val favoriteChannelList = favoriteChannelListProvider()
 
-        if (_currentChannel !in favoriteChannelList) return null
+        // 按名称匹配：收藏里存的是收藏当时的 Channel 快照，源刷新后对象不再相等，
+        // 用 indexOf/contains 会判定"当前频道不在收藏里"，从而退回全量切换
+        val currentIdx = favoriteChannelList.indexOfFirst { it.name == _currentChannel.name }
+        if (currentIdx < 0) return null
 
-        val currentIdx = favoriteChannelList.indexOf(_currentChannel)
-
-        return favoriteChannelList.getOrElse(currentIdx - 1) {
+        return resolveChannel(favoriteChannelList.getOrElse(currentIdx - 1) {
             if (settingsViewModel.iptvChannelChangeListLoop) favoriteChannelList.lastOrNull()
             else channelGroupList.channelLastOrNull()
-        }
+        })
     }
 
     private fun getNextFavoriteChannel(): Channel? {
@@ -203,14 +216,13 @@ class MainContentState(
         val channelGroupList = channelGroupListProvider()
         val favoriteChannelList = favoriteChannelListProvider()
 
-        if (_currentChannel !in favoriteChannelList) return null
+        val currentIdx = favoriteChannelList.indexOfFirst { it.name == _currentChannel.name }
+        if (currentIdx < 0) return null
 
-        val currentIdx = favoriteChannelList.indexOf(_currentChannel)
-
-        return favoriteChannelList.getOrElse(currentIdx + 1) {
+        return resolveChannel(favoriteChannelList.getOrElse(currentIdx + 1) {
             if (settingsViewModel.iptvChannelChangeListLoop) favoriteChannelList.firstOrNull()
             else channelGroupList.channelFirstOrNull()
-        }
+        })
     }
 
     private fun getPrevChannel(): Channel {

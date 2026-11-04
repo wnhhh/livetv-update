@@ -88,6 +88,9 @@ object Configs {
         /** 显示直播源频道收藏列表 */
         IPTV_CHANNEL_FAVORITE_LIST_VISIBLE,
 
+        /** 「上下键只在收藏内切换」默认值迁移标记 */
+        IPTV_FAVORITE_SWITCH_MIGRATED,
+
         /** 直播源频道收藏列表 */
         IPTV_CHANNEL_FAVORITE_LIST,
 
@@ -346,8 +349,13 @@ object Configs {
 
     /** 显示直播源频道收藏列表 */
     var iptvChannelFavoriteListVisible: Boolean
-        get() = SP.getBoolean(KEY.IPTV_CHANNEL_FAVORITE_LIST_VISIBLE.name, false)
+        get() = SP.getBoolean(KEY.IPTV_CHANNEL_FAVORITE_LIST_VISIBLE.name, true)
         set(value) = SP.putBoolean(KEY.IPTV_CHANNEL_FAVORITE_LIST_VISIBLE.name, value)
+
+    /** 「上下键只收藏内切换」默认值迁移是否已执行（老版本默认关，升级后统一打开一次） */
+    var iptvFavoriteSwitchMigrated: Boolean
+        get() = SP.getBoolean(KEY.IPTV_FAVORITE_SWITCH_MIGRATED.name, false)
+        set(value) = SP.putBoolean(KEY.IPTV_FAVORITE_SWITCH_MIGRATED.name, value)
 
     /** 直播源频道收藏列表 */
     var iptvChannelFavoriteList: ChannelFavoriteList

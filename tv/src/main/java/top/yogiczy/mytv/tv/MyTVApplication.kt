@@ -23,6 +23,20 @@ class MyTVApplication : Application(), ImageLoaderFactory {
         crashHandle()
         AppData.init(applicationContext)
         initDefaultConfigs()
+        migrateFavoriteChannelSwitch()
+    }
+
+    /**
+     * 迁移「上下键只在收藏内切换」的默认值
+     *
+     * 旧版本这个开关默认关闭、设置界面也没有入口，导致收藏了频道后上下键仍在全量频道里切换。
+     * 这里统一打开一次，收藏为空时行为不变；之后以设置页的开关为准。
+     */
+    private fun migrateFavoriteChannelSwitch() {
+        if (Configs.iptvFavoriteSwitchMigrated) return
+
+        Configs.iptvChannelFavoriteListVisible = true
+        Configs.iptvFavoriteSwitchMigrated = true
     }
 
     /**

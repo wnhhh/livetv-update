@@ -477,10 +477,17 @@ fun MainContent(
             showEpgProgrammeProvider = { settingsViewModel.uiShowEpgProgrammeProgress },
             favoriteEnabledProvider = { settingsViewModel.iptvChannelFavoriteEnable },
             favoriteChannelListProvider = favoriteChannelListProvider,
+            favoriteSwitchEnabledProvider = { settingsViewModel.iptvChannelFavoriteListVisible },
             onChannelFavoriteToggle = { onChannelFavoriteToggle(it) },
-            onChannelSelected = {
+            onChannelSelected = { channel ->
                 mainContentState.isChannelScreenVisible = false
-                mainContentState.changeCurrentChannel(it)
+
+                // 收藏分组里存的是收藏当时的频道快照，源刷新后线路可能已变，
+                // 选中时先按名称映射回当前源里的最新对象
+                val latestChannel = filteredChannelGroupListProvider().channelList
+                    .firstOrNull { it.name == channel.name } ?: channel
+
+                mainContentState.changeCurrentChannel(latestChannel)
             },
             onClose = { mainContentState.isChannelScreenVisible = false },
         )

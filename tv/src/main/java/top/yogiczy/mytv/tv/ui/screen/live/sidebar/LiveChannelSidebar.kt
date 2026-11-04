@@ -75,6 +75,7 @@ fun LiveChannelSidebar(
     showEpgProgrammeProvider: () -> Boolean = { false },
     favoriteEnabledProvider: () -> Boolean = { false },
     favoriteChannelListProvider: () -> ChannelList = { ChannelList() },
+    favoriteSwitchEnabledProvider: () -> Boolean = { false },
     onChannelFavoriteToggle: (Channel) -> Unit = {},
     onChannelSelected: (Channel) -> Unit = {},
     onClose: () -> Unit = {},
@@ -110,7 +111,17 @@ fun LiveChannelSidebar(
     }
 
     var groupIdx by rememberSaveable(groups.size) {
-        // 优先定位到当前频道所在的真实分组；只有它仅存在于收藏里时才落在收藏分组
+        // 与「上下键只在收藏内切换」保持一致：
+        // 开关打开且当前频道已收藏时，打开列表直接停在收藏分组的那一条，
+        // 而不是跑到它所属的原始分组里（否则上下的范围和打开列表的位置对不上）
+        val favoriteGroupIdx = if (favoriteSwitchEnabledProvider()) {
+            groups.indexOfFirst { group ->
+                group.name == FAVORITE_GROUP_NAME && group.channelList.any { it.name == currentChannel.name }
+            }
+        } else {
+            -1
+        }
+
         val realGroupIdx = groups.indexOfFirst { group ->
             group.name != FAVORITE_GROUP_NAME && group.channelList.any { it.name == currentChannel.name }
         }
@@ -119,7 +130,13 @@ fun LiveChannelSidebar(
             group.channelList.any { it.name == currentChannel.name }
         }
 
-        mutableIntStateOf((if (realGroupIdx >= 0) realGroupIdx else fallbackIdx).coerceAtLeast(0))
+        val targetIdx = when {
+            favoriteGroupIdx >= 0 -> favoriteGroupIdx
+            realGroupIdx >= 0 -> realGroupIdx
+            else -> fallbackIdx
+        }
+
+        mutableIntStateOf(targetIdx.coerceAtLeast(0))
     }
 
     val safeGroupIdx = groupIdx.coerceIn(0, groups.lastIndex)

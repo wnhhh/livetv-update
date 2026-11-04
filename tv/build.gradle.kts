@@ -18,8 +18,8 @@ android {
         applicationId = "com.livetv.player"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
-        versionCode = 14
-        versionName = "3.3.21"
+        versionCode = 16
+        versionName = "3.3.23"
         vectorDrawables {
             useSupportLibrary = true
         }
