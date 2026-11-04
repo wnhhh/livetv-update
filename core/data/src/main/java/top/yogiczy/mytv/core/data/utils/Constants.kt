@@ -17,12 +17,12 @@ object Constants {
     /**
      * 应用 代码仓库
      */
-    const val APP_REPO = "https://github.com/yaoxieyoulei/mytv-android"
+    const val APP_REPO = "https://github.com/wnhhh/livetv-update"
 
     /**
-     * 交流群 telegram
+     * 应用 说明
      */
-    const val GROUP_TELEGRAM = "https://t.me/mytv_android"
+    const val APP_DESC = "个人自用的电视直播应用"
 
     /**
      * 直播源

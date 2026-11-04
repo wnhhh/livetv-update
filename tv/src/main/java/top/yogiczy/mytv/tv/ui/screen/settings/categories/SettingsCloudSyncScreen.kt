@@ -267,7 +267,7 @@ private fun SettingsCloudSyncScreenPreview() {
                 version = "9.9.9",
                 syncFrom = "客厅的电视",
                 syncAt = System.currentTimeMillis(),
-                description = "mytv-android云同步测试",
+                description = "livetv 云同步测试",
             ),
         )
     }
